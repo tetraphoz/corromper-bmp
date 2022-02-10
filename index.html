@@ -78,11 +78,11 @@
 
 		</style>
 		<script src="https://unpkg.com/feather-icons"></script>
-		<script type="module" src="node_modules/pako/dist/pako.js"></script>
+		<script src="node_modules/pako/dist/pako.js"></script>
 		<script src="UPNG.js/UPNG.js"></script>
     </head>
     <body>
-		<h1>¡Destruye una imagen!</h1>
+		<h1>¡Destruye imagenes!</h1>
 		<p>Esta aplicacion te permite tomar fotografias y experimentar con lo que sucede si cambiamos al azar bits de la imagen.</p>
 		<div class="toolbar">
 		<input type="file" id="archivo" name="arch" accept="image/png, image/jpeg">
@@ -95,9 +95,8 @@
 			<canvas id="canvas"></canvas>
 		</div>
 		<p>Cada formato tiene sus peculiaridades al corromperse.</p>
-		<p>Para mas informacion:
-		<a href="https://ucnv.github.io/pnglitch/">The Art of PNG Glitch</a>
-		</p>
+		<p>Aqui solo estamos revolviendo los bits de pngs pero se pueden obtener mejores resultados usando como guia: </p>
+		<p> <a href="https://ucnv.github.io/pnglitch/">The Art of PNG Glitch</a> </p>
 
 		<script type="text/javascript">
 		 var video = document.getElementById('video');
@@ -110,6 +109,7 @@
 		 function load_image(source){
 			 // img.setAttribute('crossOrigin', 'anonymous');
 			 img.src = source;
+			 img.crossOrigin = "anonymous"
 			 img.onload = () => {
 				 context.clearRect(0, 0, canvas.width, canvas.height);
 				 canvas.width = img.width;
@@ -119,7 +119,7 @@
 		 }
 
 		 //carga inicial de imagen
-		 // load_image("https://mcdn.wallpapersafari.com/medium/47/8/FTh0s1.jpg");
+		 // load_image("gatuco.jpg");
 
 		 //Tomar fotografia
 		 var contador = 0;
@@ -183,14 +183,19 @@
 		 // Corromper png
 		 document.getElementById("corromper").addEventListener("click", function() {
 			 // Convertir canvas a png
+
 			 let data = context.getImageData(0, 0, 10, 10).data;
 			 let buffer = data.buffer;  // ArrayBuffer
+			 let view = new Uint8Array(buffer);
 
-			 // Usar splice?
+			 for(i = 0; i <= 100; i++){
+				 // Usar splice?
+				 view[getRandomInt(view.lenght)] = getRandomInt(255);
+			 }
 
-			 // var png_data = UPNG.decode(buffer);
 			 // Convertir png a canvas y mostrar
-			 var png = UPNG.encode([buffer], img.width, img.height, 0);
+			 var png_data = UPNG.encode([view], img.width, img.height, 0);
+			 var png  = UPNG.decode(png_data);
 			 load_image(png);
 		 });
 
