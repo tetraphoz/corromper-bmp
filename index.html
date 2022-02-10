@@ -57,7 +57,6 @@
 		 }
 
 		 p{
-			 color: white;
 			 font-family: 'Rubik Mono One', sans-serif;
 			 color: #F3A712;
 			 text-align: center;
@@ -70,14 +69,21 @@
 			 /* margin: auto; */
 		 }
 
+		 a{
+			 color: white;
+			 font-family: 'Rubik Mono One', sans-serif;
+			 text-align: center;
+			 font-size: 2vw;
+		 }
+
 		</style>
 		<script src="https://unpkg.com/feather-icons"></script>
     </head>
     <body>
 		<h1>¡Destruye una imagen!</h1>
-		<p>Esta aplicacion te permite tomar fotografias para luego corremperlas.</p>
+		<p>Esta aplicacion te permite tomar fotografias y experimentar con lo que sucede si cambiamos al azar bits de la imagen.</p>
 		<div class="toolbar">
-		<input type="file" id="archivo" accept="image/png, image/jpeg">
+		<input type="file" id="archivo" name="arch" accept="image/png, image/jpeg">
 		<button type="button" id="corromper"><i data-feather="refresh-ccw"></i></button>
 		<button type="button" id="snap"><i data-feather="camera"></i></button>
 		<button type="button" id="guardar"><i data-feather="download"></i></button>
@@ -86,6 +92,10 @@
 			<video id="video" autoplay></video>
 			<canvas id="canvas"></canvas>
 		</div>
+		<p>Cada formato tiene sus peculiaridades al corromperse.</p>
+		<p>Para mas informacion:
+		<a href="https://ucnv.github.io/pnglitch/">The Art of PNG Glitch</a>
+		</p>
 
 		<script type="text/javascript">
 		 var video = document.getElementById('video');
@@ -96,9 +106,12 @@
 		 var img = new Image();
 
 		 function load_image(source){
-			 img.setAttribute('crossOrigin', 'anonymous');
+			 // img.setAttribute('crossOrigin', 'anonymous');
 			 img.src = source;
 			 img.onload = () => {
+				 context.clearRect(0, 0, canvas.width, canvas.height);
+				 canvas.width = img.width;
+				 canvas.height = img.height;
 				 context.drawImage(img, 0, 0);
 			 };
 		 }
@@ -126,6 +139,7 @@
 					 video.style.display = "block";
 					 break;
 				 case 2:
+					 context.clearRect(0, 0, canvas.width, canvas.height);
 					 context.drawImage(video, 0, 0);
 					 video.style.display = "none";
 					 canvas.style.display = "block";
@@ -138,10 +152,19 @@
 		 });
 
 		 //Cargar archivo
-		 const input = document.getElementById('archivo');
-		 input.onchange = () => {
-			 load_image(input.files[0]);
-			 input.files[0] = null;
+		 function readFile(e) {
+			 var file = e.target.files[0];
+			 if (!file) return;
+			 var reader = new FileReader();
+			 reader.onload = function(e) {
+				 console.log(e.target.result);
+				 load_image(e.target.result);
+			 }
+			 reader.readAsDataURL(file)
+		 }
+
+		 document.getElementById('archivo').onchange = function() {
+			 readFile(event);
 		 };
 
 		 //Guardar imagen
@@ -153,9 +176,21 @@
 			 link.click();
 		 });
 
-
 		 //Corromper imagen
-
+		 // var BASE64_MARKER = ';base64,';
+		 //
+		 // 		 function convertDataURIToBinary(dataURI) {
+		 // 			 var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+		 // 			 var base64 = dataURI.substring(base64Index);
+		 // 			 var raw = window.atob(base64);
+		 // 			 var rawLength = raw.length;
+		 // 			 var array = new Uint8Array(new ArrayBuffer(rawLength));
+		 //
+		 // 			 for(i = 0; i < rawLength; i++) {
+		 // 				 array[i] = raw.charCodeAt(i);
+		 // 			 }
+		 // 			 return array;
+		 // 		 }
 
 		 //iconos
 		 feather.replace();
