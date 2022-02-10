@@ -78,6 +78,8 @@
 
 		</style>
 		<script src="https://unpkg.com/feather-icons"></script>
+		<script type="module" src="node_modules/pako/dist/pako.js"></script>
+		<script src="UPNG.js/UPNG.js"></script>
     </head>
     <body>
 		<h1>¡Destruye una imagen!</h1>
@@ -140,6 +142,8 @@
 					 break;
 				 case 2:
 					 context.clearRect(0, 0, canvas.width, canvas.height);
+					 canvas.width = video.videoWidth;
+					 canvas.height = video.videoHeight;
 					 context.drawImage(video, 0, 0);
 					 video.style.display = "none";
 					 canvas.style.display = "block";
@@ -152,45 +156,44 @@
 		 });
 
 		 //Cargar archivo
-		 function readFile(e) {
+		 function readImg(e) {
 			 var file = e.target.files[0];
 			 if (!file) return;
 			 var reader = new FileReader();
 			 reader.onload = function(e) {
-				 console.log(e.target.result);
 				 load_image(e.target.result);
 			 }
 			 reader.readAsDataURL(file)
 		 }
-
 		 document.getElementById('archivo').onchange = function() {
-			 readFile(event);
+			 readImg(event);
 		 };
 
 		 //Guardar imagen
 		 document.getElementById("guardar").addEventListener("click", function() {
-			 let imageURI = canvas.toDataURL("image/jpg");
-			 const link = document.createElement("a");
-			 link.href = imageURI;
-			 link.download = "imagen.jpg";
-			 link.click();
+			 let data = canvas.toDataURL("image/png");
+			 window.open(data);
 		 });
 
-		 //Corromper imagen
-		 // var BASE64_MARKER = ';base64,';
-		 //
-		 // 		 function convertDataURIToBinary(dataURI) {
-		 // 			 var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-		 // 			 var base64 = dataURI.substring(base64Index);
-		 // 			 var raw = window.atob(base64);
-		 // 			 var rawLength = raw.length;
-		 // 			 var array = new Uint8Array(new ArrayBuffer(rawLength));
-		 //
-		 // 			 for(i = 0; i < rawLength; i++) {
-		 // 				 array[i] = raw.charCodeAt(i);
-		 // 			 }
-		 // 			 return array;
-		 // 		 }
+
+		 function getRandomInt(max) {
+			 return Math.floor(Math.random() * max);
+		 }
+
+		 // Corromper png
+		 document.getElementById("corromper").addEventListener("click", function() {
+			 // Convertir canvas a png
+			 let data = context.getImageData(0, 0, 10, 10).data;
+			 let buffer = data.buffer;  // ArrayBuffer
+
+			 // Usar splice?
+
+			 // var png_data = UPNG.decode(buffer);
+			 // Convertir png a canvas y mostrar
+			 var png = UPNG.encode([buffer], img.width, img.height, 0);
+			 load_image(png);
+		 });
+
 
 		 //iconos
 		 feather.replace();
