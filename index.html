@@ -78,8 +78,6 @@
 
 		</style>
 		<script src="https://unpkg.com/feather-icons"></script>
-		<script src="node_modules/pako/dist/pako.js"></script>
-		<script src="UPNG.js/UPNG.js"></script>
     </head>
     <body>
 		<h1>¡Destruye imagenes!</h1>
@@ -95,7 +93,7 @@
 			<canvas id="canvas"></canvas>
 		</div>
 		<p>Cada formato tiene sus peculiaridades al corromperse.</p>
-		<p>Aqui solo estamos revolviendo los bits de pngs pero se pueden obtener mejores resultados usando como guia: </p>
+		<p>Aqui solo estamos revolviendo los bits de bmps, pero se pueden obtener mejores resultados usando como guia: </p>
 		<p> <a href="https://ucnv.github.io/pnglitch/">The Art of PNG Glitch</a> </p>
 
 		<script type="text/javascript">
@@ -117,6 +115,8 @@
 				 context.drawImage(img, 0, 0);
 			 };
 		 }
+
+
 
 		 //carga inicial de imagen
 		 // load_image("gatuco.jpg");
@@ -165,13 +165,14 @@
 			 }
 			 reader.readAsDataURL(file)
 		 }
+
 		 document.getElementById('archivo').onchange = function() {
 			 readImg(event);
 		 };
 
 		 //Guardar imagen
 		 document.getElementById("guardar").addEventListener("click", function() {
-			 let data = canvas.toDataURL("image/png");
+			 let data = canvas.toDataURL("image/bmp");
 			 window.open(data);
 		 });
 
@@ -180,23 +181,29 @@
 			 return Math.floor(Math.random() * max);
 		 }
 
-		 // Corromper png
-		 document.getElementById("corromper").addEventListener("click", function() {
-			 // Convertir canvas a png
+		 function load_bmp(imagedata){
+		 }
 
+		 // Corromper bmp
+		 document.getElementById("corromper").addEventListener("click", function() {
+
+			 // Convertir canvas a array
 			 let data = context.getImageData(0, 0, 10, 10).data;
 			 let buffer = data.buffer;  // ArrayBuffer
 			 let view = new Uint8Array(buffer);
 
-			 for(i = 0; i <= 100; i++){
-				 // Usar splice?
-				 view[getRandomInt(view.lenght)] = getRandomInt(255);
+			 // Revolver
+			 for(i = 0; i <= 5; i++){
+				 view[getRandomInt(view.lenght-17)+17] = getRandomInt(127);
 			 }
 
-			 // Convertir png a canvas y mostrar
-			 var png_data = UPNG.encode([view], img.width, img.height, 0);
-			 var png  = UPNG.decode(png_data);
-			 load_image(png);
+			 // Convertir array a bmp
+			 img.src = canvas.toDataURL();
+			 img.crossOrigin = "anonymous"
+			 canvas.width = img.width;
+			 canvas.height = img.height;
+			 context.clearRect(0, 0, canvas.width, canvas.height);
+			 context.putImageData(view, 0, 0);
 		 });
 
 
